@@ -1,4 +1,8 @@
-﻿Vlad Kuzmin Vladkuz100
+Vlad Kuzmin Vladkuz100
+Chuck79
+Илья Белан IlyaScorp
+KILLdon
+Протасов Виталий VepIndustry
 Митюшин Дмитрий mityushin
 Скобелев Григорий GSkoba
 Никита Слупко Nislupko
