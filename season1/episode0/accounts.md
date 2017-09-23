@@ -1,3 +1,4 @@
+Протасов Виталий VepIndustry
 Vlad Kuzmin Vladkuz100
 Митюшин Дмитрий mityushin
 Скобелев Григорий GSkoba
