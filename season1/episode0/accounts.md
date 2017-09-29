@@ -31,6 +31,7 @@ Istomin Anton i-anton
 Nadia Poletova poletova-n
 Сычев Вадим vksychev
 Горбатов Егор gorbatovea
+Ярулин Кирилл kirillyarulin
 VladlenKaraush
 Ефремов Владислав vladefr97
 Victory Shepard demonolock
