@@ -32,3 +32,4 @@ Nadia Poletova poletova-n
 Сычев Вадим vksychev
 Горбатов Егор gorbatovea
 Ефремов Владислав vladefr97
+demonolock (Victory Shepard)
