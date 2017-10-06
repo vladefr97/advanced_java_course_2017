@@ -12,6 +12,12 @@ package edu.technopolis;
 public interface EntryPoint {
     static void main(String... args) {
         FibonacciAlgorithm algorithm = new DummyFibonacciAlgorithm();
+<<<<<<< HEAD
         System.out.println(algorithm.evaluate(Integer.parseInt(args[0])));
+=======
+        FibonacciAlgorithm myAlgorithm = new PresentFibonacciAlgorithm();
+        System.out.println(algorithm.evaluate(Integer.parseInt(args[0])));
+        System.out.println(myAlgorithm.evaluate(Integer.parseInt(args[0])));
+>>>>>>> Mityushin
     }
 }
