@@ -31,7 +31,12 @@ public class Fibonacci implements FibonacciAlgorithm {
             num2 = Arrays.copyOf(num2, num2.length + 2);
             result = Arrays.copyOf(result, result.length + 2);
         }
+
         result[last] += n1[last] + n2[last];
+        if (result[last] < 0) {
+            result[last] -= Long.MIN_VALUE;
+            result[last + 1] += 1;
+        }
 
         return result;
     }
