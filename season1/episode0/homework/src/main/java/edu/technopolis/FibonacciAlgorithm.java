@@ -1,6 +1,8 @@
 package edu.technopolis;
 
 
+import org.testng.annotations.Test;
+
 /**
  * Интрефейс, который следует унаследовать при решении домашнего задания.<br/>
  * <h1>!!!Важно!!!</h1>
@@ -10,7 +12,7 @@ package edu.technopolis;
 public interface FibonacciAlgorithm {
     /**
      * Получение числа фибоначчи в десятичном виде по индексу. Например, F(1)=1, F(2)=1, F(3)=2, F(5)=5 и т.д.
-     * @see edu.technopolis.Test
+     * @see Test
      */
     String evaluate(int index);
 }
