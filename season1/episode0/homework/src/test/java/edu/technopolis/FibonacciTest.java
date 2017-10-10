@@ -50,6 +50,6 @@ public class FibonacciTest {
     public void evaluate12000() throws Exception {
         Fibonacci fibonacci = new Fibonacci();
         String f12000 = new Scanner(new File("src/test/resources/f12000.txt")).nextLine();
-        Assert.assertEquals("Wrong evaluation for 1000", f12000, fibonacci.evaluate(12000));
+        Assert.assertEquals("Wrong evaluation for 12000", f12000, fibonacci.evaluate(12000));
     }
 }
