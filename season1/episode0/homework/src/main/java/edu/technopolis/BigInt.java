@@ -36,30 +36,21 @@ class BigInt {
     }
 
     public BigInt plus(BigInt other) {
-        int newSize;
-        if (this.size > other.size) {
-            newSize = this.size;
-            other.values = Arrays.copyOf(other.values, newSize);
-            other.size = newSize;
-        } else if (this.size < other.size) {
-            newSize = other.size;
-            this.values = Arrays.copyOf(this.values, newSize);
-            this.size = newSize;
-        } else {
-            newSize = this.size;
-        }
+        if (other.size > this.size) return other.plus(this);
 
-        long[] res = new long[newSize]; //If will be overflow
-        for (int i = 0; i < newSize; i++) {
-            if ((this.values[i] < 0 && other.values[i] < 0) ||
-                    ((this.values[i] < 0 || other.values[i] < 0) && (res[i] + this.values[i] + other.values[i]) >= 0)) {
-                if (i + 1 == newSize) {
-                    res = Arrays.copyOf(res, newSize + 1);
+        long[] res = new long[size];
+        for (int i = 0; i < size; i++) {
+            long first = this.values[i];
+            long second = i >= other.size ? 0 : other.values[i];
+            if ((first < 0 && second < 0) ||
+                    ((first < 0 || second < 0) && (res[i] + first + second) >= 0)) {
+                if (i + 1 == size) {
+                    res = Arrays.copyOf(res, size + 1);
                 }
                 res[i + 1]++;
             }
 
-            res[i] += this.values[i] + other.values[i];
+            res[i] += first + second;
         }
 
         return new BigInt(res);
