@@ -61,10 +61,6 @@ public class MyBigInteger {
                 this.arr[i + 1]++;
                 this.arr[i] &= Long.MAX_VALUE;  //Операций побитового умножения, обнуляем разряд
                 this.arr[i] += 1;
-
-                //Система счисления по основанию = 10^9
-                /*this.arr[i + 1] += 1;
-                this.arr[i] = y.arr[i] - (Long.MAX_VALUE - this.arr[i]);*/
             }
         }
     }
