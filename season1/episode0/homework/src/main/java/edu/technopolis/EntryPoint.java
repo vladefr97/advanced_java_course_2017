@@ -10,8 +10,15 @@ package edu.technopolis;
  * </ul>
  */
 public interface EntryPoint {
-    static void main(String... args) {
+    static void main(String[] args) {
+        int count = 100000;
+        FibonacciAlgorithm goodAlgorithm = new GoodFibonacciAlgorithm();
         FibonacciAlgorithm algorithm = new DummyFibonacciAlgorithm();
-        System.out.println(algorithm.evaluate(Integer.parseInt(args[0])));
+        String correctResult =  algorithm.evaluate(count);
+        System.out.println("correct " + correctResult);
+        String myResult =  goodAlgorithm.evaluate(count);
+
+        System.out.println("my result " + myResult);
+        System.out.println(correctResult.equals(myResult) ? "Yeah" : "Nope");
     }
 }
