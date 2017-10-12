@@ -6,23 +6,24 @@ import java.util.Arrays;
 public class CustomBigInteger {
 
     /**
-     * Число в системе счисления с основанием Long.MAX_VALUE + 1,
-     * представленное в виде long[].
+     * Число в системе счисления с основанием {@code Long.MAX_VALUE + 1},
+     * представленное в виде {@code long[]}.
      */
     private long[] number;
 
     /**
-     * Размер массива.
+     * Размер массива {@code number}.
      */
     private int size;
 
     /**
-     * Стандартный размер массива. 4 лонга хватает примерно на 350 чисел Фибоначчи.
+     * Стандартный размер массива {@code number}.
+     * 4 лонга хватает примерно на 350 чисел Фибоначчи.
      */
     private static final int DEFAULT_CAPACITY = 4;
 
     /**
-     * Дефолтный конструктор.
+     * Стандартный конструктор, создает массив {@code number} с размером по дефолту.
      */
     public CustomBigInteger() {
         number = new long[DEFAULT_CAPACITY];
@@ -30,10 +31,10 @@ public class CustomBigInteger {
     }
 
     /**
-     * Конструктор с заданием произволного размера массива.
-     * @param size размер внутреннего массива, т.е. число лонгов.
+     * Конструктор с заданием произвольного размера массива {@code number}.
+     * @param size размер массива {@code number}, т.е. число лонгов.
      */
-    private CustomBigInteger(int size) {
+    public CustomBigInteger(int size) {
         number = new long[size];
         this.size = size;
     }
@@ -49,7 +50,7 @@ public class CustomBigInteger {
     }
 
     /**
-     * Сумма данного экземпляра и numberToAdd.
+     * Сумма данного экземпляра и {@code numberToAdd}.
      * @param numberToAdd второе слагаемое.
      * @return сумма двух чисел.
      */
@@ -65,7 +66,7 @@ public class CustomBigInteger {
             }
         }
 
-        //частный случай для последнего разряда, если он переполняется, то массив увеличивается
+        //частный случай для последнего разряда: если он переполняется, то массив увеличивается
         int lastIndex = result.size - 1;
         result.number[lastIndex] += this.number[lastIndex] + numberToAdd.number[lastIndex];
         if (result.number[lastIndex] < 0) {
@@ -102,7 +103,7 @@ public class CustomBigInteger {
     }
 
     /**
-     * Увеличивает внутренний массив на четверть.
+     * Увеличивает массив {@code number} на четверть.
      */
     private void grow() {
         size += size / 4;
