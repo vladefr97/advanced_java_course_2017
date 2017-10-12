@@ -1,6 +1,5 @@
 package edu.technopolis;
 
-import java.math.BigInteger;
 
 /**
  * Это класс с тестами для проверки работоспособности кода домашнего задания.
