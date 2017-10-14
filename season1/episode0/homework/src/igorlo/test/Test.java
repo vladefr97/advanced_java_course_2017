@@ -9,7 +9,7 @@ public class Test {
     public static void main(String[] args) {
 
         boolean shouldPrintProcess = true;
-        testAll(true);
+        testAll(shouldPrintProcess);
 
 
     }
