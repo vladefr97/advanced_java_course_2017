@@ -10,8 +10,14 @@ package edu.technopolis;
  * </ul>
  */
 public interface EntryPoint {
-    static void main(String... args) {
-        FibonacciAlgorithm algorithm = new DummyFibonacciAlgorithm();
-        System.out.println(algorithm.evaluate(Integer.parseInt(args[0])));
+    static void main(String... args) throws Exception {
+//        FibonacciAlgorithm algorithm = new MyFibonacciAlgorithm();
+//        for (int i = 1;i<102;i++)
+//        System.out.println(algorithm.evaluate(i));
+        System.out.println(Long.MAX_VALUE);
+        BigLongCase a = new BigLongCase(Long.MAX_VALUE);
+        BigLongCase b = new BigLongCase(Long.MAX_VALUE);
+        a.sumBig(b);
+        System.out.println(a.toString());
     }
 }
