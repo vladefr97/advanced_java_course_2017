@@ -39,6 +39,7 @@ public class LongNumber {
         System.arraycopy(a, 0, res, 0, a.length);
         for (int i = 0; i < numbers.length; i++) {
             res[i] += temp + numbers[i];
+            //определение необходимости переноса
             temp = res[i] & Long.MIN_VALUE;
             res[i] ^= temp;
             temp >>>= 63;
@@ -47,33 +48,43 @@ public class LongNumber {
     }
 
     public String toString() {
+        //тетрады храним в лонгах
         long[] tetrads = new long[(int) (Math.ceil(numbers.length * 1.25f))];
+        //добавляем тройку в каждую тетраду
         for (int i = 0; i < tetrads.length; i++) {
             tetrads[i] = MASK_THREE;
         }
+        //массив для хранения коррекции
         long[] correction = new long[tetrads.length];
+        //буферная переменная
         long temp;
+        //основной цикл
         for (int i = numbers.length * 63 - 1; i >= 0; i--) {
+            //определяем необходимость коррекции для каждой тетрады
             for (int j = 0; j < tetrads.length; j++) {
                 temp = tetrads[j] & MASK_EIGHT;
                 temp = temp >>> 2;
                 temp |= temp >>> 1;
                 correction[j] = temp;
             }
+            //сдвигаем тетрады и вталкиваем старший бит числа
             for (int j = 0; j < tetrads.length - 1; j++) {
                 tetrads[j] <<= 1;
                 tetrads[j] |= ((tetrads[j + 1] & Long.MIN_VALUE) >>> 63);
             }
             tetrads[tetrads.length - 1] <<= 1;
             tetrads[tetrads.length - 1] |= (numbers[i / 63] >>> (i % 63)) & 1L;
+            //коррекция
             for (int j = 0; j < tetrads.length; j++) {
                 temp = (correction[j] ^ MASK_THREE);
                 tetrads[j] += correction[j] - temp;
             }
         }
+        //отнимаем избыточную тройку
         for (int i = 0; i < tetrads.length; i++) {
             tetrads[i] -= MASK_THREE;
         }
+        //перевод тетрад в строку
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < tetrads.length; i++) {
             for (int j = 15; j >= 0; j--) {
