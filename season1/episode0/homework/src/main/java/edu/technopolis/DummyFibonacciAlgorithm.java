@@ -20,5 +20,7 @@ public class DummyFibonacciAlgorithm implements FibonacciAlgorithm {
             two = result;
         }
         return result.toString();
+
     }
+
 }
