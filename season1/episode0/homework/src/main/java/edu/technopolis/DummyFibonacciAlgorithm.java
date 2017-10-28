@@ -2,6 +2,7 @@ package edu.technopolis;
 
 import java.math.BigInteger;
 
+
 /**
  * Это <b>неправильный</b> с точки зрения задания алгоритм.
  */
@@ -21,4 +22,5 @@ public class DummyFibonacciAlgorithm implements FibonacciAlgorithm {
         }
         return result.toString();
     }
+
 }
