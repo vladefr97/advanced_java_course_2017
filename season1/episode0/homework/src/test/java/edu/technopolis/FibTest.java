@@ -1,0 +1,62 @@
+package edu.technopolis;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+public class FibTest {
+
+    @Test
+    public void Fib_Neg() throws Exception {
+        GoodFibonacciAlgorithm fib = new GoodFibonacciAlgorithm();
+        try {
+            fib.evaluate(-2);
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+
+        }
+    }
+
+    @Test
+    public void Fib_0() throws Exception {
+        GoodFibonacciAlgorithm fib = new GoodFibonacciAlgorithm();
+        Assert.assertEquals("0", fib.evaluate(0));
+    }
+
+    @Test
+    public void Fib_1() throws Exception {
+        GoodFibonacciAlgorithm fib = new GoodFibonacciAlgorithm();
+        Assert.assertEquals("1", fib.evaluate(1));
+    }
+
+    @Test
+    public void Fib_100() throws Exception {
+        GoodFibonacciAlgorithm fib = new GoodFibonacciAlgorithm();
+        Assert.assertEquals("354224848179261915075", fib.evaluate(100));
+    }
+
+    @Test
+    public void Fib_250() throws Exception {
+        GoodFibonacciAlgorithm fib = new GoodFibonacciAlgorithm();
+        Assert.assertEquals("7896325826131730509282738943634332893686268675876375", fib.evaluate(250));
+    }
+
+    @Test
+    public void Fib_500() throws Exception {
+        GoodFibonacciAlgorithm fib = new GoodFibonacciAlgorithm();
+        Assert.assertEquals("139423224561697880139724382870407283950070256587697307264108962948325571622863290691557658876222521294125", fib.evaluate(500));
+    }
+
+    @Test
+    public void Fib_750() throws Exception {
+        GoodFibonacciAlgorithm fib = new GoodFibonacciAlgorithm();
+        Assert.assertEquals("2461757021582324272166248155313036893697139996697461509576233211000055607912198979704988704446425834042795269603588522245550271050495783935904220352228801000", fib.evaluate(750));
+    }
+
+    @Test
+    public void Fib_1000() throws Exception {
+        GoodFibonacciAlgorithm fib = new GoodFibonacciAlgorithm  ();
+        Assert.assertEquals("43466557686937456435688527675040625802564660517371780402481729089536555417949051890403879840079255169295922593080322634775209689623239873322471161642996440906533187938298969649928516003704476137795166849228875", fib.evaluate(1000));
+    }
+
+
+}
