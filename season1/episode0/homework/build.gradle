@@ -1,5 +1,5 @@
-group 'edu.technopolis.advjava.homework.season1'
-version '0.0.1'
+group 'com.sudzhaev'
+version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
