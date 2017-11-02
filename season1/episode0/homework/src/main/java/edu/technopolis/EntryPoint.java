@@ -13,5 +13,7 @@ public interface EntryPoint {
     static void main(String... args) {
         FibonacciAlgorithm algorithm = new DummyFibonacciAlgorithm();
         System.out.println(algorithm.evaluate(Integer.parseInt(args[0])));
+        FibonacciAlgorithm myAlgorithm = new MyFibonacciAlgorithm();
+        System.out.println(myAlgorithm.evaluate(Integer.parseInt(args[0])));
     }
 }
