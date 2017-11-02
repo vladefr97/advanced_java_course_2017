@@ -11,7 +11,7 @@ package edu.technopolis;
  */
 public interface EntryPoint {
     static void main(String... args) {
-        FibonacciAlgorithm algorithm = new MyFibonacciAlgorithm();
+        FibonacciAlgorithm algorithm = new DummyFibonacciAlgorithm();
         System.out.println(algorithm.evaluate(Integer.parseInt(args[0])));
     }
 }
