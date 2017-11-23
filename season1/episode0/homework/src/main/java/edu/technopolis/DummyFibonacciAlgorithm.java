@@ -8,14 +8,15 @@ import java.math.BigInteger;
 public class DummyFibonacciAlgorithm implements FibonacciAlgorithm {
     @Override
     public String evaluate(int index) {
-        if (index < 3) {
-           return "1";
+        if (n < 3) {
+            return "1";
         }
-        BigInteger one = BigInteger.ONE;
-        BigInteger two = BigInteger.ONE;
-        BigInteger result = one;
-        for (int i = 2; i < index; i++) {
-            result = one.add(two);
+        BigArithmetic one = new BigArithmetic(1L,4000);
+        BigArithmetic two =new BigArithmetic(1L,4000);
+        BigArithmetic result = one;
+        for (int i = 2; i < n; i++) {
+            one.add(two);
+            result=one;
             one = two;
             two = result;
         }
