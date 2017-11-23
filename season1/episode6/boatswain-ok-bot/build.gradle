@@ -46,11 +46,17 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+//dockerDistTar {
+//    environmentVariable('JAVA_HOME', '/usr/java/jdk-9')
+//}
+
 docker {
     javaApplication {
         baseImage = 'jfisbein/alpine-oracle-jdk9'
+//        baseImage = 'dockerregistry.jtechnopolis.pw:5443/oracle-jdk-9-centos-7:0.0.1'
         maintainer = 'Maintainer'
         port = 8080
+//        tag = 'oracle-9-jdk'
     }
 }
 

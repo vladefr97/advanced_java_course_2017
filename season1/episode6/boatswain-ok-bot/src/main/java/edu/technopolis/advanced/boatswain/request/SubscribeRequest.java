@@ -1,6 +1,6 @@
 package edu.technopolis.advanced.boatswain.request;
 
-public class SubscribeRequest extends Request<SubscribePayload> {
+public class SubscribeRequest extends Request<SubscribePayload, SubscribeRequest> {
     private final String query;
 
     public SubscribeRequest(String subscriptionEndpoint) {
@@ -13,7 +13,12 @@ public class SubscribeRequest extends Request<SubscribePayload> {
     }
 
     @Override
-    public String getQueryString() {
+    protected SubscribeRequest thiss() {
+        return this;
+    }
+
+    @Override
+    public String getQueryStart() {
         return query;
     }
 }

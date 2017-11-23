@@ -7,10 +7,17 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.technopolis.advanced.boatswain.incoming.request.Message;
+import edu.technopolis.advanced.boatswain.incoming.request.MessageNotification;
+import edu.technopolis.advanced.boatswain.incoming.request.Recipient;
 import edu.technopolis.advanced.boatswain.request.GetSubscriptionsRequest;
+import edu.technopolis.advanced.boatswain.request.SendMessagePayload;
+import edu.technopolis.advanced.boatswain.request.SendMessageRequest;
+import edu.technopolis.advanced.boatswain.request.SendRecipient;
 import edu.technopolis.advanced.boatswain.request.SubscribePayload;
 import edu.technopolis.advanced.boatswain.request.SubscribeRequest;
 import edu.technopolis.advanced.boatswain.response.GetSubscriptionsResponse;
+import edu.technopolis.advanced.boatswain.response.SendMessageResponse;
 import edu.technopolis.advanced.boatswain.response.SubscribeResponse;
 import edu.technopolis.advanced.boatswain.response.Subscription;
 
@@ -45,6 +52,7 @@ public class BoatswainBot {
             }
             log.info("Creating endpoint...");
             createServer(client, props);
+            log.info("Server created. Waiting for incoming connections...");
         } catch (Exception e) {
             log.error("Failed to create api client", e);
             closeClient(client);
@@ -85,16 +93,17 @@ public class BoatswainBot {
     }
 
     private static OkApiClient createClient(Properties props) throws IOException {
-        int port = Integer.parseInt(props.getProperty("ok.api.port", "443"));
+        String schema = props.getProperty("ok.api.schema", "https");
         String host = props.getProperty("ok.api.host");
         String tokenParamName = props.getProperty("ok.api.param.token");
         String token = props.getProperty("ok.api.access_token");
-        return new OkApiClient(host, tokenParamName + '=' + token);
+        return new OkApiClient(schema, host, tokenParamName + '=' + token);
     }
 
     private static void createServer(OkApiClient client, Properties props) {
         try {
-            BotServer botServer = new BotServer(props.getProperty("bot.message.local.endpoint"));
+            BotServer botServer = new BotServer(props.getProperty("bot.message.local.endpoint"),
+                    new MessageSender(client, props)::send);
             Runtime
                     .getRuntime()
                     .addShutdownHook(new Thread(() -> {
@@ -104,6 +113,48 @@ public class BoatswainBot {
             botServer.start();
         } catch (IOException e) {
             log.error("Failed to initialize http server on port 80", e);
+        }
+    }
+
+    private static class MessageSender {
+
+        private final OkApiClient client;
+        private final String phrase;
+        private final String joke;
+        private final String sendEndpoint;
+
+        MessageSender(OkApiClient client, Properties props) {
+            this.client = client;
+            this.phrase = props.getProperty("bot.phrase");
+            this.joke = props.getProperty("bot.joke");
+            this.sendEndpoint = props.getProperty("ok.api.endpoint.send");
+            log.info("Phrase is {}, joke is {}", phrase, joke);
+        }
+
+        boolean send(MessageNotification notif) {
+            if (notif == null || notif.getMessage() == null || notif.getMessage().getText() == null) {
+                log.info("Message notification contains no text <{}>", notif);
+                return true;
+            }
+            if (!notif.getMessage().getText().contains(phrase)) {
+                log.info("Message notification does not contain phrase <{}>", notif);
+                return true;
+            }
+            if (notif.getRecipient() == null || notif.getRecipient().getChatId() == null) {
+                log.warn("Message notification does not contain chat id <{}>", notif);
+                return false;
+            }
+            SendRecipient recipient = new SendRecipient(notif.getSender().getUserId());
+            Message message = new Message();
+            message.setText(joke);
+            SendMessageRequest req = new SendMessageRequest(sendEndpoint, notif.getRecipient().getChatId())
+                    .setPayload(new SendMessagePayload(recipient, message));
+            try {
+                return client.post(req, SendMessageResponse.class).getMessageId() != null;
+            } catch (IOException e) {
+                log.error("Failed to send message ", e);
+                return false;
+            }
         }
     }
 

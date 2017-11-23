@@ -1,8 +1,10 @@
 package edu.technopolis.advanced.boatswain;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -24,13 +26,14 @@ import edu.technopolis.advanced.boatswain.request.Request;
 class OkApiClient implements Closeable {
     private static final Logger log = LoggerFactory.getLogger(OkApiClient.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final String SCHEMA = "https://";
 
+    private final String apiSchema;
     private final String apiHost;
     private final String tokenParam;
     private final CloseableHttpClient client;
 
-    OkApiClient(String apiHost, String tokenParam) {
+    OkApiClient(String apiSchema, String apiHost, String tokenParam) {
+        this.apiSchema = apiSchema;
         this.apiHost = apiHost;
         this.tokenParam = tokenParam;
 
@@ -61,14 +64,25 @@ class OkApiClient implements Closeable {
 
     <RESP> RESP method(Class<RESP> clazz, HttpUriRequest method) throws IOException {
         try (CloseableHttpResponse response = client.execute(method)){
-            try (InputStream content = response.getEntity().getContent()) {
-                return MAPPER.readValue(content, clazz);
+            StringBuilder sb = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
             }
+            String content = sb.toString();
+            log.info("Read response {}", content);
+            return MAPPER.readValue(content, clazz);
+//            }
+            //            try (InputStream content = response.getEntity().getContent()) {
+//                return MAPPER.readValue(content, clazz);
+//            }
         }
     }
 
     private <REQ extends Request> String getQueryString(REQ req) {
-        String queryString = req.getQueryString();
+        String queryString = req.getQueryStart();
         if (queryString.indexOf('?') != -1) {
             //... то нужно добавит ещё один параметр
             queryString += '&' + tokenParam;
@@ -76,7 +90,7 @@ class OkApiClient implements Closeable {
             //... иначе добавить новый единственный параметр
             queryString += '?' + tokenParam;
         }
-        return SCHEMA + apiHost + queryString;
+        return apiSchema + "://" + apiHost + queryString;
     }
 
     @Override

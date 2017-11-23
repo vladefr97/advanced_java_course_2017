@@ -1,6 +1,6 @@
 package edu.technopolis.advanced.boatswain.request;
 
-public abstract class Request<RP extends RequestPayload> {
+public abstract class Request<RP extends RequestPayload, R extends Request<RP, R>> {
     private RP payload;
 
     public Request() {
@@ -14,9 +14,12 @@ public abstract class Request<RP extends RequestPayload> {
         return payload;
     }
 
-    public void setPayload(RP payload) {
+    public R setPayload(RP payload) {
         this.payload = payload;
+        return thiss();
     }
 
-    public abstract String getQueryString();
+    protected abstract R thiss();
+
+    public abstract String getQueryStart();
 }
