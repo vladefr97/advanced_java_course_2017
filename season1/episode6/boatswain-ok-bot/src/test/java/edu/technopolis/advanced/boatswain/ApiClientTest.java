@@ -60,7 +60,7 @@ public class ApiClientTest {
     @Test
     public void testCurrency() throws IOException {
         ApiClient currencyClient = new ApiClient("http", "api.fixer.io", null);
-        CurrencyResponse usd = currencyClient.get(new CurrencyRequest("USD"), CurrencyResponse.class);
+        CurrencyResponse usd = currencyClient.get(new CurrencyRequest("USD", to), CurrencyResponse.class);
         Assert.assertNotNull(usd.getRates());
         Assert.assertNotNull(usd.getRates().get("RUB"));
     }

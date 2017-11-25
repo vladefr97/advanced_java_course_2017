@@ -61,7 +61,7 @@ docker {
 }
 
 group = 'edu.tecnopolis.advjava'
-version = '0.0.1'
+version = '0.0.1-currency'
 sourceCompatibility = 1.8
 // Define the main class for the application
 mainClassName = 'edu.technopolis.advanced.boatswain.BoatswainBot'

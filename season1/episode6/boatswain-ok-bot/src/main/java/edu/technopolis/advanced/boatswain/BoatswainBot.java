@@ -36,9 +36,9 @@ public class BoatswainBot {
             log.error("Failed to read application properties. Terminating application...");
             System.exit(1);
         }
-        ApiClient okClient = null;
+        ApiClient currencyClient = createCurrencyClient(props);
+        ApiClient okClient = createClient(props);
         try {
-            okClient = createClient(props);
             GetSubscriptionsResponse response = okClient.get(
                     new GetSubscriptionsRequest(props.getProperty("ok.api.endpoint.subscriptions")), GetSubscriptionsResponse.class);
             String botEndpoint = props.getProperty("bot.message.endpoint");
@@ -51,13 +51,31 @@ public class BoatswainBot {
                 log.info("Subscription is ok");
             }
             log.info("Creating endpoint...");
-            createServer(okClient, props);
+            BotServer server = createServer(okClient, currencyClient, props);
             log.info("Server created. Waiting for incoming connections...");
+            addShutDownHooks(server, okClient, currencyClient);
         } catch (Exception e) {
             log.error("Unexpected failure", e);
             closeClient(okClient);
+            closeClient(currencyClient);
             System.exit(1);
         }
+    }
+
+    private static void addShutDownHooks(BotServer server, ApiClient okClient, ApiClient currencyClient) {
+        Runtime
+                .getRuntime()
+                .addShutdownHook(new Thread(() -> {
+                    closeClient(okClient);
+                    closeClient(currencyClient);
+                    server.stop();
+                }));
+    }
+
+    private static ApiClient createCurrencyClient(Properties props) {
+        return new ApiClient(props.getProperty("currency.api.schema"),
+                props.getProperty("currency.api.host"),
+                null);
     }
 
     private static void closeClient(ApiClient client) {
@@ -92,7 +110,7 @@ public class BoatswainBot {
         return false;
     }
 
-    private static ApiClient createClient(Properties props) throws IOException {
+    private static ApiClient createClient(Properties props) {
         String schema = props.getProperty("ok.api.schema", "https");
         String host = props.getProperty("ok.api.host");
         String tokenParamName = props.getProperty("ok.api.param.token");
@@ -100,34 +118,35 @@ public class BoatswainBot {
         return new ApiClient(schema, host, tokenParamName + '=' + token);
     }
 
-    private static void createServer(ApiClient okClient, Properties props) {
+    private static BotServer createServer(ApiClient okClient, ApiClient currencyClient, Properties props)
+            throws IOException {
         try {
             BotServer botServer = new BotServer(props.getProperty("bot.message.local.endpoint"),
-                    new MessageSender(okClient, props)::send);
-            Runtime
-                    .getRuntime()
-                    .addShutdownHook(new Thread(() -> {
-                        closeClient(okClient);
-                        botServer.stop();
-                    }));
+                    new MessageSender(okClient, currencyClient, props)::send);
             botServer.start();
+            return botServer;
         } catch (IOException e) {
-            log.error("Failed to initialize http server on port 80", e);
+            log.error("Failed to initialize http server on port 80");
+            throw e;
         }
     }
 
     private static class MessageSender {
 
         private final ApiClient client;
+        private final ApiClient currencyClient;
         private final String phrase;
-        private final String joke;
         private final String sendEndpoint;
+        private final String rateQueryTemplate;
+        private final String mainCurrencyCode;
 
-        MessageSender(ApiClient okClient, Properties props) {
+        MessageSender(ApiClient okClient, ApiClient currencyClient, Properties props) {
             this.client = okClient;
+            this.currencyClient = currencyClient;
             this.phrase = props.getProperty("bot.phrase");
-            this.joke = props.getProperty("bot.joke");
             this.sendEndpoint = props.getProperty("ok.api.endpoint.send");
+            this.rateQueryTemplate = props.getProperty("currency.api.endpoint.rate.template");
+            this.mainCurrencyCode = props.getProperty("currency.code");
         }
 
         boolean send(MessageNotification notif) {
@@ -143,18 +162,37 @@ public class BoatswainBot {
                 log.warn("Message notification does not contain chat id <{}>", notif);
                 return false;
             }
+            String currencyMessage = getCurrencyExchangeMessage(notif);
+
             SendMessageRequest req = new SendMessageRequest(sendEndpoint, notif.getRecipient().getChatId())
                     .setPayload(
                             new SendMessagePayload(
                                     new SendRecipient(notif.getSender().getUserId()),
-                                    new Message(joke)
+                                    new Message(currencyMessage)
                             )
                     );
             try {
                 return client.post(req, SendMessageResponse.class).getMessageId() != null;
             } catch (IOException e) {
-                log.error("Failed to send message ", e);
+                log.error("Failed to send message", e);
                 return false;
+            }
+        }
+
+        private String getCurrencyExchangeMessage(MessageNotification notif) {
+            String currencyCandidate = notif.getMessage().getText().substring(phrase.length() + 1);
+            if (currencyCandidate.length() > 3) {
+                return "Bad currency code";
+            }
+
+            String rateQuery = String.format(rateQueryTemplate, currencyCandidate, mainCurrencyCode);
+            try {
+                CurrencyResponse currencyResponse = currencyClient.get(
+                        new CurrencyRequest(rateQuery), CurrencyResponse.class);
+                return String.valueOf(currencyResponse.getRates().get(mainCurrencyCode)) + ' ' + mainCurrencyCode;
+            } catch (IOException e) {
+                log.error("Failed to send currency request", e);
+                return "Epic fail";
             }
         }
     }
